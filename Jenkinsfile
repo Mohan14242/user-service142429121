@@ -4,9 +4,6 @@ pipeline {
     stages {
 
         stage('Load Project Configuration') {
-            when {
-                branch 'dev'
-            }
             steps {
                 script {
                     if (!fileExists('config.json')) {
@@ -23,21 +20,23 @@ pipeline {
                 }
             }
         }
-        stage("loading the other variables"){
-            script {
-                env.COMMIT_SHA = sh(
+
+        stage("Loading Other Variables") {
+            steps {
+                script {
+                    env.COMMIT_SHA = sh(
                         script: "git rev-parse --short HEAD",
                         returnStdout: true
                     ).trim()
 
-                echo "COMMIT_SHA = ${env.COMMIT_SHA}"
-                VERSION = "${env.SERVICE_NAME}-${env.COMMIT_SHA}"
+                    echo "COMMIT_SHA = ${env.COMMIT_SHA}"
+
+                    env.VERSION = "${env.SERVICE_NAME}-${env.COMMIT_SHA}"
+                    echo "VERSION = ${env.VERSION}"
+                }
             }
         }
-        
-
     }
-
 
     post {
         success {
